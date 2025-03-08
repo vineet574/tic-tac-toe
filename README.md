@@ -23,9 +23,14 @@ python tic_tac_toe_gui.py
 Requirements
 Python 3.x
 Tkinter (Comes pre-installed with Python)
+
+
+
 🛠️ Setup Instructions
 Download or clone this repository.
 Open a terminal in the project directory.
 Run python tic_tac_toe_gui.py.
+
+
 🤝 Contributing
 Feel free to fork this repo, improve the game, and submit pull requests! 😊
