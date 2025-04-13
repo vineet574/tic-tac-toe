@@ -91,6 +91,16 @@ GUI: Create a graphical user interface (GUI) using a library like Tkinter, PyQt,
 
 Multiplayer (Networked): Allow two players to play against each other over a network.
 
+
+Features Added:
+Score Tracking: Keeps track of wins for both players.
+
+AI Difficulty Levels: Easy and hard modes for the computer.
+
+Replay Option: Allows players to play multiple games in one session.
+
+Undo Feature: Players can undo their last move.
+
 Scorekeeping: Keep track of the number of wins for each player.
 
 Replay Option: Ask if the players want to play again after a game ends.
