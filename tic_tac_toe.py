@@ -33,76 +33,93 @@ def get_player_move(board):
         except ValueError:
             print("Invalid input. Please enter two numbers separated by a space.")
 
-def get_computer_move(board, computer_player, human_player):
-    # 1. Check if computer can win in the next move
+def get_computer_move(board, computer_player, human_player, difficulty="hard"):
+    if difficulty == "easy":
+        return random.choice(get_available_moves(board))
+    # Hard difficulty logic: win, block opponent, take center, or random move
     for row, col in get_available_moves(board):
         board[row][col] = computer_player
         if check_winner(board, computer_player):
-            board[row][col] = " "  # Undo the move for now
+            board[row][col] = " "
             return row, col
-        board[row][col] = " "  # Undo the move
-
-    # 2. Check if the player can win in the next move and block them
+        board[row][col] = " "
     for row, col in get_available_moves(board):
         board[row][col] = human_player
         if check_winner(board, human_player):
-            board[row][col] = " "  # Undo the move for now
+            board[row][col] = " "
             return row, col
-        board[row][col] = " "  # Undo the move
-
-    # 3. Choose the center if it's free
+        board[row][col] = " "
     if board[1][1] == " ":
         return 1, 1
-
-    # 4. Choose a random available move
     return random.choice(get_available_moves(board))
 
+def undo_move(board, moves_stack):
+    if moves_stack:
+        row, col = moves_stack.pop()
+        board[row][col] = " "
+
 def tic_tac_toe():
-    board = [[" " for _ in range(3)] for _ in range(3)]
-    players = ["X", "O"]
-    player_choice = input("Do you want to play as X or O? ").upper()
-
-    while player_choice not in ["X", "O"]:
-        player_choice = input("Invalid choice. Please enter X or O: ").upper()
-
-    if player_choice == "X":
-        human_player = "X"
-        computer_player = "O"
-    else:
-        human_player = "O"
-        computer_player = "X"
-
-    turn = 0
-    play_against_computer = input("Do you want to play against the computer? (yes/no): ").lower() == "yes"
-
+    scores = {"X": 0, "O": 0}
     while True:
-        print_board(board)
+        board = [[" " for _ in range(3)] for _ in range(3)]
+        players = ["X", "O"]
+        moves_stack = []
 
-        if turn % 2 == 0:
-            if not play_against_computer or human_player == players[turn % 2]:
-                row, col = get_player_move(board)
-            else:
-                row, col = get_computer_move(board, computer_player, human_player)
-                print(f"Computer plays at row {row}, column {col}")
+        player_choice = input("Do you want to play as X or O? ").upper()
+        while player_choice not in ["X", "O"]:
+            player_choice = input("Invalid choice. Please enter X or O: ").upper()
+
+        if player_choice == "X":
+            human_player = "X"
+            computer_player = "O"
         else:
-            if not play_against_computer or human_player == players[turn % 2]:
-                row, col = get_player_move(board)
+            human_player = "O"
+            computer_player = "X"
+
+        play_against_computer = input("Do you want to play against the computer? (yes/no): ").lower() == "yes"
+        difficulty = "hard" if play_against_computer and input("Choose difficulty (easy/hard): ").lower() == "hard" else "easy"
+
+        turn = 0
+        while True:
+            print_board(board)
+            if turn % 2 == 0:
+                if not play_against_computer or human_player == players[turn % 2]:
+                    row, col = get_player_move(board)
+                else:
+                    row, col = get_computer_move(board, computer_player, human_player, difficulty)
+                    print(f"Computer plays at row {row}, column {col}")
             else:
-                row, col = get_computer_move(board, computer_player, human_player)
-                print(f"Computer plays at row {row}, column {col}")
+                if not play_against_computer or human_player == players[turn % 2]:
+                    row, col = get_player_move(board)
+                else:
+                    row, col = get_computer_move(board, computer_player, human_player, difficulty)
+                    print(f"Computer plays at row {row}, column {col}")
 
-        board[row][col] = players[turn % 2]
+            board[row][col] = players[turn % 2]
+            moves_stack.append((row, col))
 
-        if check_winner(board, players[turn % 2]):
-            print_board(board)
-            print(f"Player {players[turn % 2]} wins!")
+            if check_winner(board, players[turn % 2]):
+                print_board(board)
+                print(f"Player {players[turn % 2]} wins!")
+                scores[players[turn % 2]] += 1
+                break
+
+            if is_board_full(board):
+                print_board(board)
+                print("It's a draw!")
+                break
+
+            turn += 1
+
+            if input("Do you want to undo the last move? (yes/no): ").lower() == "yes":
+                undo_move(board, moves_stack)
+                turn -= 1
+
+        update_scores(players[turn % 2], scores)
+        if input("Do you want to play again? (yes/no): ").lower() != "yes":
             break
 
-        if is_board_full(board):
-            print_board(board)
-            print("It's a draw!")
-            break
-
-        turn += 1
+def update_scores(winner, scores):
+    print(f"Scores: Player X - {scores['X']}, Player O - {scores['O']}")
 
 tic_tac_toe()
