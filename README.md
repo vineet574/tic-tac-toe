@@ -101,6 +101,28 @@ Replay Option: Allows players to play multiple games in one session.
 
 Undo Feature: Players can undo their last move.
 
+
+Leaderboard (Persistent Scores Across Games)
+Use a file to save and load scores between sessions.
+
+Timed Moves
+Add a time limit per move using threading.Timer or signal on Unix.
+
+Multiple Undo (Undo History Limit)
+Allow multiple undos (up to a set number like 3) instead of just one.
+
+Replay Game Moves
+After a match, show a replay by printing the board step-by-step from moves_stack.
+
+Play as Two Humans
+Already possible — but make it more intuitive with clearer prompts when computer play is off.
+
+Stylized Board Display
+Use emojis or colored output (colorama) for a visually appealing experience.
+
+Auto Save/Load Last Game
+On exit and next start, resume from where the last game left off (via JSON file).
+
 Scorekeeping: Keep track of the number of wins for each player.
 
 Replay Option: Ask if the players want to play again after a game ends.
