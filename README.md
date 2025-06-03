@@ -128,3 +128,13 @@ Scorekeeping: Keep track of the number of wins for each player.
 Replay Option: Ask if the players want to play again after a game ends.
 
 Board Size: Allow the user to choose the size of the board (e.g., 4x4, 5x5) for a more complex game. This would require modifying the win-checking logic.
+
+
+New Features Included:
+Player names
+
+Game timer
+
+Leaderboard (top scores with names)
+
+Move hint system
