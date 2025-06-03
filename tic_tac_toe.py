@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import time
 
 SCORE_FILE = "scores.json"
 UNDO_LIMIT = 3
@@ -66,7 +67,10 @@ def load_scores():
     if os.path.exists(SCORE_FILE):
         with open(SCORE_FILE, "r") as f:
             return json.load(f)
-    return {"X": 0, "O": 0}
+    return {
+        "X": {"name": "", "score": 0},
+        "O": {"name": "", "score": 0}
+    }
 
 def replay_game(moves):
     board = [[" "]*3 for _ in range(3)]
@@ -76,6 +80,15 @@ def replay_game(moves):
         print(f"\nMove {i+1}: Player {p}")
         print_board(board)
 
+def get_hint(board, player):
+    for row, col in get_available_moves(board):
+        board[row][col] = player
+        if check_winner(board, player):
+            board[row][col] = " "
+            return row, col
+        board[row][col] = " "
+    return random.choice(get_available_moves(board))
+
 def tic_tac_toe():
     scores = load_scores()
     while True:
@@ -83,6 +96,12 @@ def tic_tac_toe():
         players = ["X", "O"]
         moves_stack = []
         history = []
+
+        player_names = {}
+        player_names["X"] = input("Enter name for player X: ")
+        player_names["O"] = input("Enter name for player O: ")
+        scores["X"]["name"] = player_names["X"]
+        scores["O"]["name"] = player_names["O"]
 
         player_choice = input("Do you want to play as X or O? ").upper()
         while player_choice not in ["X", "O"]:
@@ -95,10 +114,16 @@ def tic_tac_toe():
         difficulty = "hard" if play_against_computer and input("Choose difficulty (easy/hard): ").lower() == "hard" else "easy"
 
         turn = 0
+        start_time = time.time()
+
         while True:
             print_board(board)
             current_player = players[turn % 2]
+
             if not play_against_computer or current_player == human_player:
+                if input("Need a hint? (yes/no): ").lower() == "yes":
+                    hint_row, hint_col = get_hint(board, current_player)
+                    print(f"Hint: Try row {hint_row}, column {hint_col}")
                 row, col = get_player_move(board)
             else:
                 row, col = get_computer_move(board, computer_player, human_player, difficulty)
@@ -110,8 +135,8 @@ def tic_tac_toe():
 
             if check_winner(board, current_player):
                 print_board(board)
-                print(f"Player {current_player} wins!")
-                scores[current_player] += 1
+                print(f"{player_names[current_player]} ({current_player}) wins!")
+                scores[current_player]["score"] += 1
                 break
             if is_board_full(board):
                 print_board(board)
@@ -129,7 +154,9 @@ def tic_tac_toe():
                         history = history[:-undo_n]
                         turn -= undo_n
 
-        print(f"Scores: X - {scores['X']}, O - {scores['O']}")
+        elapsed = time.time() - start_time
+        print(f"Game duration: {int(elapsed)} seconds")
+        print(f"Scores: {scores['X']['name']} (X) - {scores['X']['score']}, {scores['O']['name']} (O) - {scores['O']['score']}")
         save_scores(scores)
 
         if input("Replay this game? (yes/no): ").lower() == "yes":
